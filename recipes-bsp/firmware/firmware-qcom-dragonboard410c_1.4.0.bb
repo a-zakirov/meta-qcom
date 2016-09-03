@@ -10,7 +10,7 @@ SRC_URI[sha256sum] = "822d2f8506d9657dbce6aa2bfce81ccbf97dcfc40831b70703b14b3f29
 DEPENDS += "mtools-native"
 do_unpack[depends] += "bc-native:do_populate_sysroot"
 
-COMPATIBLE_MACHINE = "(dragonboard-410c)"
+COMPATIBLE_MACHINE = "(apq8016)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 S = "${WORKDIR}/linux-board-support-package-v1.4"
