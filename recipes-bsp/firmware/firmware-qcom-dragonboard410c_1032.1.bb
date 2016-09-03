@@ -9,7 +9,7 @@ SRC_URI[sha256sum] = "a76405fae85399343bc421b6101ba765d92b3709f2d4ae8afe85dc300c
 
 DEPENDS += "mtools-native"
 
-COMPATIBLE_MACHINE = "(dragonboard-410c)"
+COMPATIBLE_MACHINE = "(apq8016)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 S = "${WORKDIR}/linux-board-support-package-r${PV}"
