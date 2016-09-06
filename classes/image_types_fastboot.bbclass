@@ -21,7 +21,7 @@ IMAGE_CMD_simg = "create_simg"
 # Default to 8 GB (not GiB) eMMC size
 FASTBOOT_EMMC_SIZE ?= "7812500"
 FASTBOOT_ABOOT ?= "${DEPLOY_DIR_IMAGE}/emmc_appsboot.mbn"
-FASTBOOT_KERNEL ?= "${DEPLOY_DIR_IMAGE}/boot-${MACHINE}.img"
+FASTBOOT_KERNEL ?= "${DEPLOY_DIR_IMAGE}/boot-${KERNEL_IMAGETYPE}-${MACHINE}.img"
 FASTBOOT_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}-${MACHINE}.simg"
 FASTBOOT_PARTTABLE ?= "${STAGING_LIBDIR}/bootloader-emmc-linux/partitions.txt"
 
