@@ -1,14 +1,29 @@
 inherit image_types
 
-IMAGE_TYPES += "fastboot"
-IMAGE_TYPEDEP_fastboot = "ext4"
+IMAGE_TYPES += "fastboot simg"
+IMAGE_TYPEDEP_fastboot = "simg"
 IMAGE_DEPENDS_fastboot = "gptfdisk-native bootloader-emmc-linux virtual/bootloader zip-native"
+IMAGE_DEPENDS_simg = "android-sparseimage-tools-native"
+
+create_simg() {
+    eval local COUNT=\"0\"
+    eval local MIN_COUNT=\"60\"
+    if [ $ROOTFS_SIZE -lt $MIN_COUNT ]; then
+        eval COUNT=\"$MIN_COUNT\"
+    fi
+    dd if=/dev/zero of=${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tmp seek=$ROOTFS_SIZE count=$COUNT bs=1024
+    mkfs.ext4 -F ${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tmp -d ${IMAGE_ROOTFS}
+    img2simg ${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tmp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.simg
+    ln -sf ${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.simg ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.simg
+    rm -f ${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tmp
+}
+IMAGE_CMD_simg = "create_simg"
 
 # Default to 8 GB (not GiB) eMMC size
 FASTBOOT_EMMC_SIZE ?= "7812500"
 FASTBOOT_ABOOT ?= "${DEPLOY_DIR_IMAGE}/emmc_appsboot.mbn"
 FASTBOOT_KERNEL ?= "${DEPLOY_DIR_IMAGE}/boot-${MACHINE}.img"
-FASTBOOT_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.ext4"
+FASTBOOT_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.simg"
 FASTBOOT_PARTTABLE ?= "${STAGING_LIBDIR}/bootloader-emmc-linux/partitions.txt"
 
 create_fastboot_pkg() {
@@ -71,8 +86,8 @@ create_fastboot_pkg() {
     dd if=${WORKDIR}/emmc.backup of=${WORKDIR}/gpt-data bs=512 count=32 skip=3 conv=notrunc
     cat ${WORKDIR}/mbr ${WORKDIR}/gpt-primary ${WORKDIR}/gpt-data ${WORKDIR}/gpt-data ${WORKDIR}/gpt-secondary > ${WORKDIR}/fastboot/parttable.bin
     cd ${WORKDIR}/fastboot
-    zip ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.zip *
-    ln -sf ${IMAGE_NAME}.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.zip
+    zip ${IMGDEPLOYDIR}/${IMAGE_NAME}.zip *
+    ln -sf ${IMAGE_NAME}.zip ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.zip
 
     rm -f ${WORKDIR}/emmc.img
 }
