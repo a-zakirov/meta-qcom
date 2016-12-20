@@ -2,6 +2,8 @@ DEPENDS += "skales-native"
 
 QCOM_BOOTIMG_ROOTFS ?= "undefined"
 QCOM_BOOTIMG_CMDLINE ?= "root=/dev/${QCOM_BOOTIMG_ROOTFS} rw rootwait"
+QCOM_BOOTIMG_INITRD ?= ""
+QCOM_BOOTIMG_INITRD_FILE ?= "${DEPLOY_DIR_IMAGE}/${QCOM_BOOTIMG_INITRD}-${MACHINE}.cpio.gz"
 
 # set output file names
 DT_IMAGE_BASE_NAME = "dt-${KERNEL_IMAGE_BASE_NAME}"
@@ -23,12 +25,17 @@ do_deploy_append() {
     baudrate=`echo $tmp | sed 's/\;.*//'`
     ttydev=`echo $tmp | sed -e 's/^[0-9]*\;//' -e 's/\s.*//' -e 's/\;.*//'`
 
-    # mkbootimg requires an initrd file, make fake one that will be ignored
-    # during boot
-    echo "This is not an initrd" > ${B}/initrd.img
+    if [ -z "${QCOM_BOOTIMG_INITRD}" ]; then
+        # mkbootimg requires an initrd file, make fake one that will be ignored
+        # during boot
+        echo "This is not an initrd" > ${B}/initrd.img
+        mkbootimg_initrdarg="--ramdisk ${B}/initrd.img"
+    else
+        mkbootimg_initrdarg="--ramdisk ${QCOM_BOOTIMG_INITRD_FILE}"
+    fi
 
     mkbootimg --kernel ${B}/arch/${ARCH}/boot/${KERNEL_IMAGETYPE} \
-              --ramdisk ${B}/initrd.img \
+              $mkbootimg_initrdarg \
               --output ${DEPLOYDIR}/${BOOT_IMAGE_BASE_NAME}.img \
               $mkbootimg_dtarg \
               --pagesize ${QCOM_BOOTIMG_PAGE_SIZE} \
@@ -38,3 +45,4 @@ do_deploy_append() {
 
     ln -sf ${BOOT_IMAGE_BASE_NAME}.img ${DEPLOYDIR}/${BOOT_IMAGE_SYMLINK_NAME}.img
 }
+do_deploy[depends] += "${@['','%s:do_image_complete' % d.getVar('QCOM_BOOTIMG_INITRD',True)][d.getVar('QCOM_BOOTIMG_INITRD',True) != '']}"
