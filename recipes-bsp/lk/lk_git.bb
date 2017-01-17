@@ -40,7 +40,7 @@ do_compile () {
 
 do_deploy() {
     install -d ${DEPLOYDIR}
-    install ${B}/build-msm8916/emmc_appsboot.mbn ${DEPLOYDIR}/${LK_BINARY}
+    install ${B}/build-${MAKE_TARGET}/emmc_appsboot.mbn ${DEPLOYDIR}/${LK_BINARY}
     ln -sf ${LK_BINARY} ${DEPLOYDIR}/${LK_SYMLINK}
 }
 
