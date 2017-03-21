@@ -8,6 +8,7 @@ SRC_URI[md5sum] = "e1c7e8957b8f37a91cadc18c1aef5c04"
 SRC_URI[sha256sum] = "a76405fae85399343bc421b6101ba765d92b3709f2d4ae8afe85dc300cf72c7e"
 
 DEPENDS += "mtools-native"
+do_unpack[depends] += "bc-native:do_populate_sysroot xz-native:do_populate_sysroot"
 
 COMPATIBLE_MACHINE = "(apq8016)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
