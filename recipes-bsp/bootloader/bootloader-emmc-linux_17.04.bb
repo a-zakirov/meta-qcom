@@ -2,10 +2,10 @@ DESCRIPTION = "Qualcomm primary bootloader binary blobs for Dragonboard"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://license.txt;md5=c09af6bc68c68f92e6a711634ee5cb14"
 
-SRC_URI = "http://builds.96boards.org/releases/dragonboard410c/linaro/rescue/${PV}/dragonboard410c_bootloader_emmc_linux-72.zip \
+SRC_URI = "http://builds.96boards.org/releases/dragonboard410c/linaro/rescue/${PV}/dragonboard410c_bootloader_emmc_linux-79.zip \
 	   file://emmc-partitions.txt"
-SRC_URI[md5sum] = "0a8281313bf3f813145cd7c60f616e2b"
-SRC_URI[sha256sum] = "67bfa09962aacd2b631bbbb23259b44ef46b3f3339e4d26fe951f270a7fabdc4"
+SRC_URI[md5sum] = "1cf7bc8704f1abb093be801420166593"
+SRC_URI[sha256sum] = "037b855edbfa69ce1d6c70326e9566b7d48567f3923bf41bf492fd3f059248dd"
 
 COMPATIBLE_MACHINE = "(apq8016)"
 
@@ -25,7 +25,7 @@ do_compile() {
 }
 do_install() {
     install -d ${D}${libdir}/${PN}
-    for f in NON-HLOS.bin hyp.mbn rpm.mbn tz-psci.mbn sbl1.mbn license.txt; do
+    for f in sbc_1.0_8016.bin hyp.mbn rpm.mbn tz.mbn sbl1.mbn LICENSE; do
 	install -m 0644 $f ${D}${libdir}/${PN}/
     done
     install -m 0644 emmc-partitions.txt ${D}${libdir}/${PN}/partitions.txt
