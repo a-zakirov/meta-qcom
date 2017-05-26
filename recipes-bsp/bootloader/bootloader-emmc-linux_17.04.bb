@@ -1,6 +1,6 @@
 DESCRIPTION = "Qualcomm primary bootloader binary blobs for Dragonboard"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://license.txt;md5=c09af6bc68c68f92e6a711634ee5cb14"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=4d087ee0965cb059f1b2f9429e166f64"
 
 SRC_URI = "http://builds.96boards.org/releases/dragonboard410c/linaro/rescue/${PV}/dragonboard410c_bootloader_emmc_linux-79.zip \
 	   file://emmc-partitions.txt"
