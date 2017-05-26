@@ -9,9 +9,23 @@ This layer depends on:
 ```
 URI: git://github.com/openembedded/oe-core.git
 layers: meta
-branch: master
+branch: morty
 revision: HEAD
 ```
+
+This layers has an optional dependency on meta-oe layer:
+
+```
+URI: git://github.com/openembedded/meta-openembedded.git
+layers: meta-oe
+branch: morty
+revision: HEAD
+```
+
+The dependency is optional, and not strictly required. When meta-oe is enabled
+in the build (e.g. it is used in BBLAYERS) then additional recipes from
+meta-qcom are added to the metadata. You can refer to meta-qcom/conf/layer.conf
+for the implementation details.
 
 ## EULA
 
@@ -38,7 +52,7 @@ case, please:
 
 * When creating patches, please use something like:
 
-`git format-patch -s --subject-prefix='meta-qcom][PATCH' origin`
+`git format-patch -s --subject-prefix='meta-qcom][morty][PATCH' origin`
 
 * When sending patches, please use something like:
 
