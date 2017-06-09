@@ -3,7 +3,7 @@ inherit image_types
 IMAGE_TYPES += "fastboot simg"
 IMAGE_TYPEDEP_fastboot = "simg"
 IMAGE_DEPENDS_fastboot = "gptfdisk-native bootloader-emmc-linux virtual/bootloader zip-native"
-IMAGE_DEPENDS_simg = "android-sparseimage-tools-native"
+IMAGE_DEPENDS_simg = "android-sparseimage-tools-native e2fsprogs-native"
 
 create_simg() {
     eval local COUNT=\"0\"
@@ -20,7 +20,7 @@ create_simg() {
 IMAGE_CMD_simg = "create_simg"
 
 # Default to 8 GB (not GiB) eMMC size
-FASTBOOT_EMMC_SIZE ?= "8000000"
+FASTBOOT_EMMC_SIZE ?= "7800000"
 FASTBOOT_ABOOT ?= "${DEPLOY_DIR_IMAGE}/emmc_appsboot.mbn"
 FASTBOOT_KERNEL ?= "${DEPLOY_DIR_IMAGE}/boot-${MACHINE}.img"
 FASTBOOT_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.simg"
@@ -31,21 +31,24 @@ create_fastboot_pkg() {
     grep -v '^[[:space:]]*#' ${FASTBOOT_PARTTABLE} > ${WORKDIR}/partitions.tmp
     SIZE=0
     while IFS=, read name size type file startpos; do
-        if [ -z "$name" -o -z "$size" -o "$size" = "REMAIN" ]; then continue; fi
+        if [ -z "$name" -o -z "$size" ]; then continue; fi
+	if [ "$size" = "ROOTFS_SIZE" ]; then
+	    size=$ROOTFS_SIZE
+	elif [ "$size" = "REMAIN" ]; then
+	    size=`expr ${FASTBOOT_EMMC_SIZE} - $SIZE`
+	fi
         if [ $startpos -ne 0 ]; then
             SIZE=`expr $startpos + $size`
         else
             SIZE=`expr $SIZE + $size`
         fi
     done < ${WORKDIR}/partitions.tmp
-    if [ $SIZE -lt ${FASTBOOT_EMMC_SIZE} ]; then
-         SIZE=${FASTBOOT_EMMC_SIZE}
-    elif [ $SIZE -gt ${FASTBOOT_EMMC_SIZE} ]; then
+    if [ $SIZE -gt ${FASTBOOT_EMMC_SIZE} ]; then
          bbfatal "Calculated partition size total $SIZE exceeds FASTBOOT_EMMC_SIZE ${FASTBOOT_EMMC_SIZE}"
          exit 1
     fi
     rm -f ${WORKDIR}/emmc.img
-    dd if=/dev/zero of=${WORKDIR}/emmc.img bs=1 seek=$(expr 1024 \* $SIZE - 1) conv=notrunc count=1
+    dd if=/dev/zero of=${WORKDIR}/emmc.img bs=1k seek=$(expr $SIZE + 1023) conv=notrunc count=1
 
     rm -rf ${WORKDIR}/fastboot
     mkdir ${WORKDIR}/fastboot
@@ -70,6 +73,9 @@ create_fastboot_pkg() {
 	if [ -z "$size" -o "$size" = "REMAIN" ]; then
 	    sgdisk -a 1 --largest-new=$partnum -c $partnum:$name $typearg ${WORKDIR}/emmc.img
 	else
+	    if [ "$size" = "ROOTFS_SIZE" ]; then
+	        size=$ROOTFS_SIZE
+	    fi
             sgdisk -a 1 --new=$partnum:$(expr $startpos \* 2):+$(expr $size \* 2) -c $partnum:$name $typearg ${WORKDIR}/emmc.img
 	fi
         if [ -n "$file" ]; then
