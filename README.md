@@ -18,7 +18,7 @@ This layers has an optional dependency on meta-oe layer:
 ```
 URI: git://github.com/openembedded/meta-openembedded.git
 layers: meta-oe
-branch: morty
+branch: pyro
 revision: HEAD
 ```
 
