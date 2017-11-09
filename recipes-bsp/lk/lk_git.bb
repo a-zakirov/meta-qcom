@@ -28,7 +28,7 @@ S = "${WORKDIR}/git"
 inherit deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "gcc-cross-arm-none-eabi gcc-runtime-arm-none-eabi binutils-cross-arm-none-eabi signlk-native openssl-native"
+DEPENDS = "gcc-arm-none-eabi-native gcc-runtime-arm-none-eabi binutils-arm-none-eabi-native signlk-native openssl-native"
 
 STAGING_BINDIR_TOOLCHAIN = "${STAGING_DIR_NATIVE}${bindir_native}/arm-none-eabi"
 LD = "arm-none-eabi-ld ${TOOLCHAIN_OPTIONS}"

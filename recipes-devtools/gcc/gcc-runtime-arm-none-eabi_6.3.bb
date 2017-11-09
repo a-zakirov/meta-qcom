@@ -4,8 +4,10 @@ require gcc-arm-none-eabi.inc
 
 RUNTIMETARGET = "libgcc"
 
-DEPENDS = "gcc-cross-arm-none-eabi virtual/libc"
+COMPILERDEP = "gcc-arm-none-eabi-native:do_gcc_stash_builddir"
+DEPENDS = "gcc-arm-none-eabi-native"
 PN = "gcc-runtime-arm-none-eabi"
+POPULATESYSROOTDEPS_class-target = ""
 
 do_install_append() {
 	# Hoist libgcc up into the directory where the compiler will look for it
