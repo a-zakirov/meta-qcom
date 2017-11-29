@@ -13,11 +13,9 @@ MAKE_TARGET = ""
 MAKE_ARGS = ""
 MAKE_TARGET_apq8016 = "msm8916"
 MAKE_ARGS_apq8016 = "EMMC_BOOT=1"
-PATH_prepend = "${STAGING_BINDIR_NATIVE}/arm-none-eabi:"
-TARGET_ARCH = "arm"
 POPULATESYSROOTDEPS_class-target = ""
 
-EXTRA_OEMAKE = "${MAKE_TARGET} ${MAKE_ARGS} TOOLCHAIN_PREFIX=arm-none-eabi- NOECHO="
+EXTRA_OEMAKE = "${MAKE_TARGET} ${MAKE_ARGS} TOOLCHAIN_PREFIX=arm-eabi- NOECHO="
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -28,16 +26,17 @@ S = "${WORKDIR}/git"
 inherit deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "gcc-cross-arm-none-eabi gcc-runtime-arm-none-eabi binutils-cross-arm-none-eabi signlk-native openssl-native"
+DEPENDS = "gcc-linaro-arm-eabi-native signlk-native openssl-native"
 
-STAGING_BINDIR_TOOLCHAIN = "${STAGING_DIR_NATIVE}${bindir_native}/arm-none-eabi"
-LD = "arm-none-eabi-ld ${TOOLCHAIN_OPTIONS}"
+STAGING_BINDIR_TOOLCHAIN = "${STAGING_DATADIR_NATIVE}/gcc-linaro-arm-eabi/bin"
+LD = "arm-eabi-ld ${TOOLCHAIN_OPTIONS}"
+CC = "arm-eabi-gcc ${TOOLCHAIN_OPTIONS}"
 
 LK_BINARY ?= "emmc_appsboot-${PV}-${PR}.mbn"
 LK_SYMLINK ?= "emmc_appsboot.mbn"
 
 do_compile () {
-    LIBGCC=`arm-none-eabi-gcc ${TOOLCHAIN_OPTIONS} -print-libgcc-file-name`
+    LIBGCC=`arm-eabi-gcc ${TOOLCHAIN_OPTIONS} -print-libgcc-file-name`
     oe_runmake LIBGCC="$LIBGCC"
     signlk -i=${B}/build-${MAKE_TARGET}/emmc_appsboot.mbn -o=${B}/build-${MAKE_TARGET}/emmc_appsboot_signed.mbn
 }
